@@ -11,7 +11,6 @@ class Run {
 public:
 	vector<vector<int>> adj_list;
 	vector<int> people;
-	bitset<10> temp;
 	int ans = 999;
 	void WouldYouJoinWithUs(bitset<10> party, int YourNum, int LastNum);
 	void TimeToCalculate(bitset<10> party, int LastNum);
@@ -36,7 +35,6 @@ void Run::WouldYouJoinWithUs(bitset<10> party, int YourNum, int LastNum)
 void Run::TimeToCalculate(bitset<10> party, int LastNum)
 {
 	int YaDang = 0, YeDang = 0, Diff = 0;
-	bool Yaflag = false, Yeflag = false;
 	for (int i = 0;i < LastNum;i++)
 	{
 		if (party[i])
@@ -50,10 +48,8 @@ void Run::TimeToCalculate(bitset<10> party, int LastNum)
 			}
 			if (j < adj_list[i].size())
 				YaDang += people[i];
-			else if (!Yaflag)
-				Yaflag = true;
-			else if (Yaflag)
-				YaDang = -1;
+			else
+                YaDang=-1;
 		}
 		else
 		{
@@ -66,21 +62,16 @@ void Run::TimeToCalculate(bitset<10> party, int LastNum)
 			}
 			if (j < adj_list[i].size())
 				YeDang += people[i];
-			else if (!Yeflag)
-				Yeflag = true;
-			else if (Yeflag)
+			else
 				YeDang = -1;
-
 		}
 	}
-	if ((YaDang == -1) || (YeDang == -1))
+	if((((party.count()!=1)&&(YaDang==-1)))||(((LastNum-party.count())!=1)&&(YeDang==-1)))
 		Diff = 9999;
 	else if ((Diff = YeDang - YaDang) < 0)
 		Diff = -1 * Diff;
-	if (Diff < ans) {
-		temp = party;
+	if (Diff < ans) 
 		ans = Diff;
-	}
 }
 
 int main(int argc, char** argv)
@@ -111,6 +102,6 @@ int main(int argc, char** argv)
 	obj.people = people;
 	bitset<10> temp_bs;temp_bs[0] = true;
 	obj.WouldYouJoinWithUs(temp_bs, 1, vertices);
-	cout << obj.ans << endl;
+	cout<<obj.ans<<endl;
 	return 0;
 }
