@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <bitset>
+#include <set>
+#include <algorithm>
 
 using namespace std;
 
@@ -11,10 +13,35 @@ class Run {
 public:
 	vector<vector<int>> adj_list;
 	vector<int> people;
+	bitset<10> temp;
 	int ans = 999;
 	void WouldYouJoinWithUs(bitset<10> party, int YourNum, int LastNum);
 	void TimeToCalculate(bitset<10> party, int LastNum);
+	bool IsThere3Forest(int LastNum);
 };
+
+bool Run::IsThere3Forest(int LastNum)
+{
+	vector<int> v(LastNum, 0);
+	for (int i = 0;i < LastNum;i++)
+		v[i] = i;
+	for (int i = 0;i < adj_list.size();i++)
+	{
+		for (int j = 0;j < adj_list[i].size();j++)
+		{
+			int k = v[i];
+			do
+			{
+				v[adj_list[i][j]] = k;
+				k = v[k];
+			} while (v[adj_list[i][j]] != k);
+		}
+	}
+	set<int> s(v.begin(), v.end());
+	if (s.size() > 2)	return 0;
+	else return 1;
+}
+
 
 void Run::WouldYouJoinWithUs(bitset<10> party, int YourNum, int LastNum)
 {
@@ -35,6 +62,7 @@ void Run::WouldYouJoinWithUs(bitset<10> party, int YourNum, int LastNum)
 void Run::TimeToCalculate(bitset<10> party, int LastNum)
 {
 	int YaDang = 0, YeDang = 0, Diff = 0;
+	bool Yaflag = false, Yeflag = false;
 	for (int i = 0;i < LastNum;i++)
 	{
 		if (party[i])
@@ -49,7 +77,7 @@ void Run::TimeToCalculate(bitset<10> party, int LastNum)
 			if (j < adj_list[i].size())
 				YaDang += people[i];
 			else
-                YaDang=-1;
+				YaDang = -1;
 		}
 		else
 		{
@@ -66,33 +94,35 @@ void Run::TimeToCalculate(bitset<10> party, int LastNum)
 				YeDang = -1;
 		}
 	}
-	if((((party.count()!=1)&&(YaDang==-1)))||(((LastNum-party.count())!=1)&&(YeDang==-1)))
+	if ((((party.count() != 1) && (YaDang == -1))) || (((LastNum - party.count()) != 1) && (YeDang == -1)))
 		Diff = 9999;
 	else if ((Diff = YeDang - YaDang) < 0)
 		Diff = -1 * Diff;
-	if (Diff < ans) 
+	if (Diff < ans) {
+		temp = party;
 		ans = Diff;
+	}
 }
 
 int main(int argc, char** argv)
 {
 	int vertices;
 	freopen("input.txt", "r", stdin);
-	cin >> vertices;
+	scanf("%d", &vertices);
 
 	vector<vector<int>> adj_list;
 	vector<int> people(vertices, 0);
 
 	for (int i = 0;i < vertices;i++)
-		cin >> people[i];
+		scanf("%d", &people[i]);
 	for (int i = 0;i < vertices;i++)
 	{
 		int edge;
-		cin >> edge;
+		scanf("%d", &edge);
 		vector<int> list(edge, 0);
 		for (int j = 0;j < edge;j++) {
 			int temp;
-			cin >> temp;
+			scanf("%d", &temp);
 			list[j] = temp - 1;
 		}
 		adj_list.push_back(list);
@@ -101,7 +131,9 @@ int main(int argc, char** argv)
 	obj.adj_list = adj_list;
 	obj.people = people;
 	bitset<10> temp_bs;temp_bs[0] = true;
-	obj.WouldYouJoinWithUs(temp_bs, 1, vertices);
-	cout<<obj.ans<<endl;
+	if(obj.IsThere3Forest(vertices))
+		obj.WouldYouJoinWithUs(temp_bs, 1, vertices);
+	if (obj.ans == 999)	printf("%d", -1);
+	else printf("%d\n", obj.ans);
 	return 0;
 }
