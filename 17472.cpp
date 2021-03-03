@@ -1,6 +1,7 @@
 //DFS->Bridge Check(Make Graph)->Kruskal
 #define _CRT_SECURE_NO_WARNINGS
 #include <vector>
+#include <cstdio>
 #include <iostream>
 #include <queue>
 
@@ -58,9 +59,13 @@ void Bridge_Check(vector<vector<int>> matrix, vector<vector<int>> &graph_matrix)
 			if (matrix[i][j] != matrix[i][j + 1])
 			{
 				//Meet Seashore
-				if (matrix[i][j+1] == 0)
+				if (matrix[i][j + 1] == 0)
 					start = j;
-				//Land Next Island
+				//Land
+				//Bay
+				else if (matrix[i][j + 1] == matrix[i][start])
+					start = j;
+				//Another Island
 				else
 					break;
 			}
@@ -73,7 +78,7 @@ void Bridge_Check(vector<vector<int>> matrix, vector<vector<int>> &graph_matrix)
 			i++;
 		}
 		//Construct Bridge
-		else if ((j - start >= 3) && (j - start < graph_matrix[matrix[i][start]][matrix[i][j]]))
+		else if ((j - start >= 3) && (j - start-1 < graph_matrix[matrix[i][start]][matrix[i][j]])) //This Line Was Problem
 			graph_matrix[matrix[i][start]][matrix[i][j]] = j - start - 1;
 	}
 }
@@ -109,15 +114,15 @@ public:
 			for (int j = 0;j < matrix.size();j++)
 				if (matrix[i][j] != 999)
 					pq.push(iii(matrix[i][j], ii(i, j)));
-		parent.assign(matrix.size() + 1, 0);
-		for (int i = 0;i < matrix.size() + 1;i++)
+		parent.assign(matrix.size(), 0);
+		for (int i = 0;i < parent.size();i++)
 			parent[i] = i;
 
 	};
 	void Merge(int v1, int v2)
 	{
 		int boss = parent[v1], sub = parent[v2];
-		for (int i = 0;i < parent.size();i++)
+		for (int i = 1;i < parent.size();i++)
 			if (parent[i] == sub)	parent[i] = boss;
 	};
 	int Find(int i)
@@ -136,6 +141,12 @@ public:
 			Merge(v.second.first, v.second.second);
 			ans += v.first;
 		}
+		
+		//Check Vertical(Not Enough to Check Only Edge)
+		for (int i = 2;i < parent.size();i++)
+			if (parent[i] != parent[i - 1])
+				return -1;
+		if (!ans)	return -1;
 		return ans;
 	};
 };
@@ -144,8 +155,7 @@ public:
 
 int main(int argc, char** argv)
 {
-	if (!freopen("input.txt", "r", stdin))
-		return 0;
+	freopen("input.txt", "r", stdin);
 	int col, row;
 	cin >> col >> row;
 
