@@ -2,9 +2,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <vector>
 #include <iostream>
+#include <queue>
 
 using namespace std;
 typedef pair<int, int> ii;
+typedef pair<int,ii> iii;
 
 bool DFS_Numbering(ii coor,int island_num, vector<vector<int>> &matrix,vector<vector<int>> &visit)
 {
@@ -88,9 +90,62 @@ vector<vector<int>> Transpose(vector<vector<int>> matrix)
 	return Trans;
 }
 
+struct comp {
+	bool operator()(iii v1, iii v2)
+	{
+		return v1.first > v2.first;
+	}
+};
+
+class Kruskal {
+public:
+	vector<int> parent;
+	vector<vector<int>> matrix;
+	priority_queue<iii,vector<iii>,comp> pq;
+	Kruskal(vector<vector<int>> matrix)
+	{
+		this->matrix = matrix;
+		for (int i = 0;i < matrix.size();i++)
+			for (int j = 0;j < matrix.size();j++)
+				if (matrix[i][j] != 999)
+					pq.push(iii(matrix[i][j], ii(i, j)));
+		parent.assign(matrix.size() + 1, 0);
+		for (int i = 0;i < matrix.size() + 1;i++)
+			parent[i] = i;
+
+	};
+	void Merge(int v1, int v2)
+	{
+		int boss = parent[v1], sub = parent[v2];
+		for (int i = 0;i < parent.size();i++)
+			if (parent[i] == sub)	parent[i] = boss;
+	};
+	int Find(int i)
+	{
+		if (parent[i] == i)	return i;
+		else return Find(parent[i]);
+	};
+	int Kruskal_Run()
+	{
+		int ans = 0;
+		while (!pq.empty())
+		{
+			iii v = pq.top();pq.pop();
+			if (Find(v.second.first) == Find(v.second.second))
+				continue;
+			Merge(v.second.first, v.second.second);
+			ans += v.first;
+		}
+		return ans;
+	};
+};
+
+
+
 int main(int argc, char** argv)
 {
-	freopen("input.txt", "r", stdin);
+	if (!freopen("input.txt", "r", stdin))
+		return 0;
 	int col, row;
 	cin >> col >> row;
 
@@ -118,6 +173,8 @@ int main(int argc, char** argv)
 	Bridge_Check(Transpose(matrix), graph_matrix);
 
 	//Kruskal
+	Kruskal K(graph_matrix);
+	cout << K.Kruskal_Run();
 	return 0;
 
 }
