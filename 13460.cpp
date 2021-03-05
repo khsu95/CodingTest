@@ -21,28 +21,34 @@ typedef struct elem
 void Move(vector<vector<char>> table, ii &ball, int dir)
 {
 	int x = ball.first, y = ball.second;
-	while ((x>=0)&&(x<table.size())&&(y>=0)&&(y<table.size()))
+	while ((x>=0)&&(x<table.size())&&(y>=0)&&(y<table[0].size()))
 	{
 		//This is Possible, Because Table' Boundary is #
 		if ((table[x + dx[dir]][y + dy[dir]] != '.')&& (table[x + dx[dir]][y + dy[dir]] != 'O'))	break;
 		x += dx[dir];
 		y += dy[dir];
+		if (table[x][y] == 'O')	break;
 	}
 	ball = ii(x, y);
 }
 
-void Swap(vector<vector<char>>& table, ii a, ii b)
+void Swap(vector<vector<char>>& table, ii a, ii b, ii dest)
 {
 	if (a == b)	return;
-	char temp = table[a.first][a.second];
-	table[a.first][a.second] = table[b.first][b.second];
-	table[b.first][b.second] = temp;
+	if (b == dest)
+		table[a.first][a.second] = '.';
+	else
+	{
+		char temp = table[a.first][a.second];
+		table[a.first][a.second] = table[b.first][b.second];
+		table[b.first][b.second] = temp;
+	}
 }
 
 int main(int argc, char** argv)
 {
 	freopen("input.txt", "r", stdin);
-	int col, row;
+	int col, row, ans = -1;
 	ii dest;
 	cin >> col>> row;
 	Elem First_Stage;
@@ -54,7 +60,7 @@ int main(int argc, char** argv)
 			cin >> First_Stage.table[i][j];
 			if (First_Stage.table[i][j] == 'R')	First_Stage.red = ii(i, j);
 			if (First_Stage.table[i][j] == 'B')	First_Stage.blue = ii(i, j);
-			if (First_Stage.table[i][j] == '0')	dest = ii(i, j);
+			if (First_Stage.table[i][j] == 'O')	dest = ii(i, j);
 		}
 	}
 
@@ -62,11 +68,8 @@ int main(int argc, char** argv)
 	while (!q.empty())
 	{
 		Elem Now = q.front();q.pop();
-		if (Now.cnt > 10)
-		{
-			cout << -1;
-			break;
-		}
+		if (Now.cnt >= 10)
+			continue;
 		//Try Down, Up, Left, Right, respectively
 		for (int i = 0;i < 4;i++)
 		{
@@ -80,17 +83,17 @@ int main(int argc, char** argv)
 			{
 				//Blue First, Because Blue Blocks Red' Path
 				Move(Next.table, Next.blue, i);
-				Swap(Next.table, Now.blue, Next.blue);
+				Swap(Next.table, Now.blue, Next.blue, dest);
 				Move(Next.table, Next.red, i);
-				Swap(Next.table, Now.red, Next.red);
+				Swap(Next.table, Now.red, Next.red, dest);
 			}
 			else
 			{
 				//Red First
 				Move(Next.table, Next.red, i);
-				Swap(Next.table, Now.red, Next.red);
+				Swap(Next.table, Now.red, Next.red,dest);
 				Move(Next.table, Next.blue, i);
-				Swap(Next.table, Now.blue, Next.blue);
+				Swap(Next.table, Now.blue, Next.blue,dest);
 			}
 			Next.dir = i;
 			Next.cnt = Now.cnt + 1;
@@ -100,11 +103,13 @@ int main(int argc, char** argv)
 			if (Next.blue == dest)	continue;
 			if (Next.red == dest) 
 			{
-				cout << Next.cnt;
+				ans = Next.cnt;
 				i = 5;
 				while (!q.empty())	q.pop();
 			}
 			else q.push(Next);
 		}
 	}
+	cout << ans;
+	return 0;
 }
