@@ -4,35 +4,21 @@
 #include <iostream>
 #include <vector>
 #include <bitset>
+#include <queue>
 
 using namespace std;
 
 typedef pair<int, int> ii;
+typedef struct node
+{
+	int x = 0;
+	int y = 0;
+	int cnt = 0;
+	int sum = 0;
+}Node;
 
 int ans = 0;
-int dx[4] = { -1,1,0,0 }, dy[4] = { 0,0,-1,1 };
-vector<vector<int>> arr;
 
-//Four Type
-void DFS(vector<vector<bool>> table, ii loc, int cnt, int sum)
-{
-	table[loc.first][loc.second] = 1;
-	if (cnt >= 4)
-	{
-		if (sum > ans)
-			ans = sum;
-		return;
-	}
-	for (int i = 0; i < 4;i++)
-	{
-		int x = loc.first + dx[i], y = loc.second + dy[i];
-		if ((x >= 0) && (x < table.size()) && (y >= 0) && (y < table[0].size()))
-		{
-			if (table[x][y])	continue;
-			DFS(table, ii(x, y), cnt + 1, sum + arr[x][y]);
-		}
-	}
-}
 
 //Another Type
 void T_Type(vector<vector<int>> table)
@@ -48,7 +34,7 @@ void T_Type(vector<vector<int>> table)
 				up = table[col - 1][row];
 			if (col + 1 < table.size())
 				down = table[col + 1][row];
-			
+
 			sum += ((up > down) ? up : down);
 			ans = (sum > ans) ? sum : ans;
 		}
@@ -69,21 +55,39 @@ int main(int argc, char** argv)
 {
 	freopen("input.txt", "r", stdin);
 	int col, row;
+	int dx[4] = { -1,1,0,0 }, dy[4] = { 0,0,-1,1 };
 	cin >> col >> row;
-	arr.assign(col, vector<int>(row, 0));
+	vector<vector<int>> arr(col, vector<int>(row, 0));
 	for (int i = 0;i < col;i++)
 		for (int j = 0;j < row;j++)
 			cin >> arr[i][j];
 
-	for (int i = 0;i < col;i++)
+	for (int i = 0;i < arr.size();i++)
 	{
-		for (int j = 0;j < row;j++)
+		for (int j = 0;j < arr[0].size();j++)
 		{
-			vector<vector<bool>> table(col, vector<bool>(row, 0));
-			for (int k = 0;k <= i;k++)
-				for (int l = 0;l <= j;l++)
-					table[k][l] = true;
-			DFS(table, ii(i, j), 1, arr[i][j]);
+			vector<vector<bool>> memo(arr.size(),vector<bool> (arr[0].size(),0));	memo[i][j] = 1;
+			Node first = { i,j,1, arr[i][j] };
+			queue<Node> q;q.push(first);
+			while (!q.empty())
+			{
+				Node n = q.front();q.pop();
+				if (n.cnt >= 4)
+				{
+					ans = (n.sum > ans) ? n.sum : ans;
+					continue;
+				}
+				for (int k = 0;k < 4;k++)
+				{
+					int x = n.x + dx[i], y = n.y + dy[i];
+					if ((x >= 0) && (x < memo.size()) && (y >= 0) && (y < memo[0].size()))
+					{
+						memo[i][j] = true;
+						q.push(Node{x,y,n.cnt+1,n.sum+arr[x][y]});
+					}
+
+				}
+			}
 		}
 	}
 
