@@ -7,86 +7,70 @@ using namespace std;
 int dx[4] = { -1,1,0,0 }, dy[4] = { 0,0,-1,1 };
 int ans = 0;
 
-void Moving(vector<int> &v, vector<vector<int>> table, int col, int row, int &A)
+void Rotation(vector<vector<int>> table, vector<vector<int>> &rotation, int dir)
 {
-	if (table[col][row])
+	switch (dir)
 	{
-		if (A != table[col][row])
-		{
-			if (A)
-				v.push_back(A);
-			A = table[col][row];
-		}
-		else
-		{
-			v.push_back(table[col][row] * 2);
-			A = 0;
-		}
+	case 0:
+		for (int col = 0;col < table.size();col++)
+			for (int row = 0;row < table[0].size();row++)
+				rotation[table.size() - 1 - row][col] = table[col][row];
+		return;
+	case 1:
+		for (int col = 0;col < table.size();col++)
+			for (int row = 0;row < table[0].size();row++)
+				rotation[row][table.size() - 1 - col] = table[col][row];
+		return;
+	case 3:
+		for (int col = 0;col < table.size();col++)
+			for (int row = 0;row < table[0].size();row++)
+				rotation[col][table.size() - 1 - row] = table[col][row];;
+		return;
 	}
 }
 
 bool Pointing(vector<vector<int>>& table, int dir)
 {
 	vector<vector<int>> N_table(table.size(), vector<int>(table[0].size(), 0));
-
-	switch (dir)
+	vector<vector<int>> Rotated_table(table.size(), vector<int>(table[0].size(), 0));
+	if (dir != 2)
+		Rotation(table, Rotated_table, dir);
+	else
+		Rotated_table = table;
+	for (int col = 0;col < table.size();col++)
 	{
-	case 0:
-		//Down
-		for (int row = 0;row < table[0].size();row++)
+		vector<int> v;
+		int A = Rotated_table[col].front();
+		for (int row = 1;row < Rotated_table[0].size();row++)
 		{
-			vector<int> v;
-			int A = table.back()[row];
-			for (int col = table.size() - 2;col >= 0;col--)
-				Moving(v, table, col, row, A);
-			v.push_back(A);
-			for (int i = 0;i < v.size();i++)
-				N_table[table.size() - 1 - i][row] = v[i];
+			if (Rotated_table[col][row])
+			{
+				if (A != Rotated_table[col][row])
+				{
+					if (A)
+						v.push_back(A);
+					A = Rotated_table[col][row];
+				}
+				else
+				{
+					v.push_back(Rotated_table[col][row] * 2);
+					A = 0;
+				}
+			}
 		}
-		break;
-	case 1:
-		//Up
-		for (int row = 0;row < table[0].size();row++)
-		{
-			vector<int> v;
-			int A = table.front()[row];
-			for (int col = 1;col < table.size();col++)
-				Moving(v, table, col, row, A);
-			v.push_back(A);
-			for (int i = 0;i < v.size();i++)
-				N_table[i][row] = v[i];
-		}
-		break;
-	case 2:
-		//Left
-		for (int col = 0;col < table.size();col++)
-		{
-			vector<int> v;
-			int A = table[col].front();
-			for (int row = 1;row < table[0].size();row++)
-				Moving(v, table, col, row, A);
-			v.push_back(A);
-			for (int i = 0;i < v.size();i++)
-				N_table[col][i] = v[i];
-		}
-		break;
-	case 3:
-		//Right
-		for (int col = 0;col < table.size();col++)
-		{
-			vector<int> v;
-			int A = table[col].back();
-			for (int row = table[0].size() - 2;row >= 0;row--)
-				Moving(v, table, col, row, A);
-			v.push_back(A);
-			for (int i = 0;i < v.size();i++)
-				N_table[col][table[0].size() - 1 - i] = v[i];
-		}
-		break;
-	}
-	if (N_table==table)	return 0;
+		v.push_back(A);
 
-	table = N_table;
+		for (int i = 0;i < v.size();i++)
+			N_table[col][i] = v[i];
+	}
+	if (N_table == Rotated_table)	return 0;
+
+	int hash[4] = { 1,0,2,3 };
+	if (dir != 2)
+		Rotation(N_table, table, hash[dir]);
+	else
+		table = N_table;
+
 	return 1;
 }
 
