@@ -90,8 +90,9 @@ int main(int argc, char** argv)
 					continue;
 			if(Move(Next.table, Next.red, i))
 				Swap(Next.table, Now.red, Next.red, dest);
+			ii bl = Next.blue; //This was the Key
 			if (Move(Next.table, Next.blue, i))
-				if (Swap(Next.table, Now.blue, Next.blue, dest))
+				if (Swap(Next.table, bl, Next.blue, dest))
 					continue;
 			Next.dir = i;
 			Next.cnt = Now.cnt + 1;
