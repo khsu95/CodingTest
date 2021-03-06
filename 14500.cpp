@@ -37,22 +37,37 @@ void DFS(vector<vector<bool>> table, ii loc, int cnt, int sum)
 //Another Type
 void T_Type(vector<vector<int>> table)
 {
-	int sum = 0;
+	int sum_ = 0, suml = 0;
 	for (int col = 0;col < table.size();col++)
 	{
-		for (int row = 1;row < table[0].size() - 1;row++)
+		for (int row = 0;row < table[0].size();row++)
 		{
-			sum = table[col][row - 1] + table[col][row] + table[col][row + 1];
-			int up = 0, down = 0;
-			if (col - 1 >= 0)
-				up = table[col - 1][row];
-			if (col + 1 < table.size())
-				down = table[col + 1][row];
+			if ((row - 1 >= 0) && (row + 1 < table[0].size()))
+			{
+				sum_ = table[col][row - 1] + table[col][row] + table[col][row + 1];
+				int up = 0, down = 0;
+				if (col - 1 >= 0)
+					up = table[col - 1][row];
+				if (col + 1 < table.size())
+					down = table[col + 1][row];
 			
-			sum += ((up > down) ? up : down);
-			ans = (sum > ans) ? sum : ans;
+				sum_ += ((up > down) ? up : down);
+			}
+			if ((col - 1 >= 0) && (col + 1 < table.size()))
+			{
+				suml = table[col - 1][row] + table[col][row] + table[col + 1][row];
+				int up = 0, down = 0;
+				if (row - 1 >= 0)
+					up = table[col - 1][row];
+				if (row + 1 < table.size())
+					down = table[col + 1][row];
+
+				suml += ((up > down) ? up : down);
+			}
+			ans = (sum_ > ans) ? (sum_ > suml ? sum_ : suml) : ans;
 		}
 	}
+
 }
 
 //Tanspose
