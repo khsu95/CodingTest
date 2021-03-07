@@ -1,3 +1,4 @@
+//https://www.acmicpc.net/problem/17281
 //DFS->Bridge Check(Make Graph)->Kruskal
 #define _CRT_SECURE_NO_WARNINGS
 #include <vector>
