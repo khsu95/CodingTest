@@ -1,3 +1,4 @@
+//https://www.acmicpc.net/problem/17471
 //In&Out Strategy
 #define _CRT_SECURE_NO_WARNINGS
 #include <cstdio>
