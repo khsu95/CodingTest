@@ -21,12 +21,12 @@ void PP()
 }
 void Gen(vector<ii> ancestor, int cnt,int maxi)
 {
-	PP();
+	//PP();
 	if (cnt >= maxi)	return;
 
 	ii last = ancestor.back();
 	int len = ancestor.size();
-	for (int i = 0;i < len - 1;i++)
+	for (int i = len-2;i >=0;i--)
 	{
 		ii offspring = ancestor[i];
 		//Parallel Translation
@@ -40,7 +40,7 @@ void Gen(vector<ii> ancestor, int cnt,int maxi)
 		//Push
 		ancestor.push_back(offspring);
 		//Marking
-		table[offspring.second + 10][offspring.first + 10] = 1;
+		table[offspring.second + 100][offspring.first + 100] = 1;
 	}
 	return Gen(ancestor, cnt + 1, maxi);
 }
@@ -48,7 +48,7 @@ void Gen(vector<ii> ancestor, int cnt,int maxi)
 int main(int argc, char** argv)
 {
 	freopen("input.txt", "r", stdin);
-	table.assign(20, vector<bool>(20, 0));
+	table.assign(250, vector<bool>(250, 0));
 	int dx[4] = { 1,0,-1,0 }, dy[4] = { 0,-1,0,1 };
 	int num, ans=0;
 	cin >> num;
@@ -58,9 +58,9 @@ int main(int argc, char** argv)
 		cin >> x >> y >> dir >> gen;
 		vector<ii> temp;
 		temp.push_back(ii(x, y));
-		table[y + 10][x + 10] = 1;
+		table[y + 100][x + 100] = 1;
 		temp.push_back(ii(x + dx[dir], y + dy[dir]));
-		table[y + dy[dir] + 10][x + dx[dir] + 10] = 1;
+		table[y + dy[dir] + 100][x + dx[dir] + 100] = 1;
 		Gen(temp, 0, gen);
 	}
 
