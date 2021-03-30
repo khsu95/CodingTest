@@ -1,4 +1,4 @@
-//https://www.acmicpc.net/problem/17143
+//https://www.acmicpc.net/problem/14888
 //2021.03.30
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -27,7 +27,7 @@ int main()
 	int col, row, num, answer = 0;
 	cin >> col >> row >> num;
 	vector<Shark> v(num);
-	for (int i = 0;i < num;i++)
+	for (int i = 0;i < v.size();i++)
 	{
 		cin >> v[i].x >> v[i].y >> v[i].velo >> v[i].dir >> v[i].size;
 	}
@@ -35,6 +35,7 @@ int main()
 	for (int i = 1;i <= row;i++)
 	{
 		//Fishing
+		sort(v.begin(), v.end(), comp);
 		vector<Shark>::iterator iter = v.begin(), n_iter;
 		while (iter != v.end())
 		{
