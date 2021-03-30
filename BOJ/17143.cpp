@@ -1,11 +1,5 @@
 //https://www.acmicpc.net/problem/14888
 //2021.03.30
-/*
-////Counter Case
-4 2 2
-2 2 3 1 1
-4 2 3 1 2
-*/
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
@@ -66,7 +60,7 @@ int main()
 				boundary = row;
 			}
 
-			while (rem >= (row - 1) * 2)   rem -= (row - 1) * 2;
+			while (rem >= (boundary - 1) * 2)   rem -= (boundary - 1) * 2;
 			while (rem > 0)
 			{
 				//Increased Dir
