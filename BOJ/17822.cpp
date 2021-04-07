@@ -23,7 +23,8 @@ void Rotate(vector < vector<int>>& table, int th, int dir, int num)
 		{
 			for (int j = table[0].size()-1;j >= 0;j--)
 			{
-				temp[abs(j + num) % table[0].size()] = table[i][j];
+				//Problem said that num<table[0].size()
+				temp[(j - num+table[0].size()) % table[0].size()] = table[i][j];
 			}
 		}
 		table[i] = temp;
@@ -33,22 +34,26 @@ void Rotate(vector < vector<int>>& table, int th, int dir, int num)
 bool DFS(vector<vector<int>>& table,vector<vector<int>> &memo,ii coor,bool &flag)
 {
 	int dx[4] = { 1,-1,0,0 }, dy[4] = { 0,0,1,-1 };
+	bool temp = 0;
 	memo[coor.first][coor.second] = 1;
 	for (int i = 0;i < 4;i++)
 	{
 		int x = coor.first + dx[i], y = coor.second + dy[i];
 		if (y == -1)
 			y = table[0].size() - 1;
+		if (y == table[0].size())
+			y = 0;
 		if (!((x >= 0) && (x < table.size()) && (y >= 0) && (y < table[0].size())))	
 			continue;
 		if (table[coor.first][coor.second] == table[x][y] && table[x][y] && !memo[x][y])
 		{
-			flag = 1;
-			table[coor.first][coor.second] = 0;
-			table[x][y] = 0;
+			temp = flag = 1;
 			DFS(table, memo, ii(x, y), flag);
+			table[x][y] = 0;
 		}
 	}
+	if(temp)
+		table[coor.first][coor.second] = 0;
 	return flag;
 }
 
@@ -68,15 +73,15 @@ void avg(vector<vector<int>>& table)
 		}
 	}
 
-	double avg = (sum / num);
+	double avg = ((double)sum / (double)num);
 	for (int i = 0;i < table.size();i++)
 	{
 		for (int j = 0;j < table[0].size();j++)
 		{
 			if ((table[i][j] < avg) && (table[i][j]))
-				table[i][j] -= 1;
-			else
 				table[i][j] += 1;
+			else if((table[i][j]>avg)&&table[i][j])
+				table[i][j] -= 1;
 		}
 	}
 }
