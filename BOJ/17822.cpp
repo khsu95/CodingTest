@@ -12,21 +12,21 @@ void Rotate(vector < vector<int>>& table, int th, int dir, int num)
 	for (int i = th-1;i < table.size();i+=th)
 	{
 		vector<int> temp = table[i];
-		if (dir)
+		if (!dir)
 		{
-			for (int j = 0;j < 4;j++)
+			for (int j = 0;j < table[0].size();j++)
 			{
-				temp[(j + num) % 4] = table[th][j];
+				temp[(j + num) % table[0].size()] = table[i][j];
 			}
 		}
 		else
 		{
-			for (int j = 3;j >= 0;j--)
+			for (int j = table[0].size()-1;j >= 0;j--)
 			{
-				temp[abs(j + num) % 4] = table[th][j];
+				temp[abs(j + num) % table[0].size()] = table[i][j];
 			}
 		}
-		table[th] = temp;
+		table[i] = temp;
 	}
 }
 
@@ -44,6 +44,7 @@ bool DFS(vector<vector<int>>& table,vector<vector<int>> &memo,ii coor,bool &flag
 		if (table[coor.first][coor.second] == table[x][y] && table[x][y] && !memo[x][y])
 		{
 			flag = 1;
+			table[coor.first][coor.second] = 0;
 			table[x][y] = 0;
 			DFS(table, memo, ii(x, y), flag);
 		}
