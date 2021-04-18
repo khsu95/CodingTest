@@ -6,10 +6,9 @@
 using namespace std;
 typedef pair<int,int> ii;
 
-vector<int> Dij(int n, int s, vector<vector<ii>> &map)
+void Dij(int n, int s, vector<vector<ii>> &map, vector<int> &v)
 {
-    priority_queue<ii> pq;
-    vector<int> v(n+1,9999999);
+    priority_queue<ii,vector<ii>, greater<ii>> pq;
     pq.push(ii(0,s));
     while(!pq.empty())
     {
@@ -23,7 +22,6 @@ vector<int> Dij(int n, int s, vector<vector<ii>> &map)
                 pq.push(ii(dist,map[elem.second][i].first));
         }
     }
-    return v;
 }
 
 int solution(int n, int s, int a, int b, vector<vector<int>> fares) 
@@ -36,12 +34,15 @@ int solution(int n, int s, int a, int b, vector<vector<int>> fares)
         table[fares[i][1]].push_back(ii(fares[i][0],fares[i][2]));
     }
     
-    vector<int> d=Dij(n,s,table);
-    vector<int> e=Dij(n,a,table);
-    vector<int> f=Dij(n,b,table);
+    vector<int> d(n+1,99999999),e(n+1,99999999),f(n+1,99999999);
+    Dij(n,s,table,d);
+    Dij(n,a,table,e);
+    Dij(n,b,table,f);
     for(int i=1;i<=n;i++)
     {
-        answer=(d[i]+e[i]+f[i]<answer)?d[i]+e[i]+f[i]:answer;
+        int dist=d[i]+e[i]+f[i];
+        if(dist<answer)
+            answer=dist;
     }
     return answer;
 }
