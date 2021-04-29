@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 using namespace std;
 
@@ -11,111 +12,91 @@ typedef pair<int, int> ii;
 
 typedef struct _elem
 {
-	vector<ii> v;
+	unordered_map<int, int> m;
 	_elem(int len, int cnt)
 	{
-		v.push_back(ii(len, cnt));
+		m.insert(ii(len, cnt));
 	}
 } Elem;
 
 vector<int> solution(vector<string> words, vector<string> queries)
 {
-	vector<int> answer;
-	map<string, Elem> prefix, postfix;
+	vector<int> answer(queries.size(),0);
+	unordered_map<string, Elem> prefix, postfix;
+	unordered_map<int, int>::iterator m_iter;
+	unordered_map<string, Elem>::iterator iter;
 	for (int i = 0;i < words.size();i++)
 	{
 		for (int j = 0;j <= words[i].size();j++)
 		{
-			map<string, Elem>::iterator iter = prefix.find(words[i].substr(0, j));
+			string sub = words[i].substr(0, j);
+			iter = prefix.find(sub);
 			if (iter == prefix.end())
 			{
-				prefix.insert(make_pair(words[i].substr(0, j), Elem(words[i].size(), 1)));
+				prefix.insert(make_pair(sub, Elem(words[i].size(), 1)));
 			}
 			else
 			{
-				int k;
-				for (k = 0;k < iter->second.v.size();k++)
-				{
-					if (iter->second.v[k].first == words[i].size())
-					{
-						iter->second.v[k].second++;
-						break;
-					}
-				}
-				if (k >= iter->second.v.size())
-					iter->second.v.push_back(ii(words[i].size(), 1));
+				m_iter = iter->second.m.find(words[i].size());
+				if (m_iter != iter->second.m.end())
+					m_iter->second++;
+				else
+					iter->second.m.insert(ii(words[i].size(), 1));
 			}
 
-			iter = postfix.find(words[i].substr(words[i].size() - j, j));
+			sub = words[i].substr(words[i].size() - j, j);
+			iter = postfix.find(sub);
 			if (iter == postfix.end())
 			{
-				postfix.insert(make_pair(words[i].substr(words[i].size() - j, j), Elem(words[i].size(), 1)));
+				postfix.insert(make_pair(sub, Elem(words[i].size(), 1)));
 			}
 			else
 			{
-				int k;
-				for (k = 0;k < iter->second.v.size();k++)
-				{
-					if (iter->second.v[k].first == words[i].size())
-					{
-						iter->second.v[k].second++;
-						break;
-					}
-				}
-				if (k >= iter->second.v.size())
-					iter->second.v.push_back(ii(words[i].size(), 1));
+				m_iter = iter->second.m.find(words[i].size());
+				if (m_iter != iter->second.m.end())
+					m_iter->second++;
+				else
+					iter->second.m.insert(ii(words[i].size(), 1));
 			}
 		}
 	}
 
+    
 	for (int i = 0;i < queries.size();i++)
 	{
-		string q = "";
-		int idx = -1;
-		while (++idx < queries[i].size())
-			if (queries[i][idx] != '?')
-				q += queries[i][idx];
 		if (queries[i][0] == '?')
 		{
-			map<string, Elem>::iterator iter = postfix.find(q);
+			int idx = -1;
+			while (idx < (int)queries[i].size())
+				if (queries[i][++idx] != '?')	break;
+			string q = queries[i].substr(idx);
+
+			iter = postfix.find(q);
 			if (iter != postfix.end())
 			{
-				int j;
-				for (j = 0;j < iter->second.v.size();j++)
-				{
-					if (iter->second.v[j].first == queries[i].size())
-					{
-						answer.push_back(iter->second.v[j].second);
-						break;
-					}
-				}
-				if (j >= iter->second.v.size())
-					answer.push_back(0);
-			}
-			else
-				answer.push_back(0);
+				m_iter = iter->second.m.find(queries[i].size());
+				if (m_iter != iter->second.m.end())
+					answer[i]=m_iter->second;
+            }
 		}
 
 		else
 		{
-			map<string, Elem>::iterator iter = prefix.find(q);
+
+			int idx = queries[i].size();
+			while (idx > 0)
+				if (queries[i][--idx] != '?')	break;
+			string q = queries[i].substr(0, idx+1);
+
+			iter = prefix.find(q);
 			if (iter != prefix.end())
 			{
-				int j;
-				for (j = 0;j < iter->second.v.size();j++)
-				{
-					if (iter->second.v[j].first == queries[i].size())
-					{
-						answer.push_back(iter->second.v[j].second);
-						break;
-					}
-				}
-				if (j >= iter->second.v.size())
-					answer.push_back(0);
+				m_iter = iter->second.m.find(queries[i].size());
+				if (m_iter != iter->second.m.end())
+					answer[i]=m_iter->second;
 			}
-			else
-				answer.push_back(0);
 		}
 	}
+    
 	return answer;
 }
