@@ -31,32 +31,32 @@ vector<int> solution(vector<string> words, vector<string> queries)
 		{
 			string sub = words[i].substr(0, j);
 			iter = prefix.find(sub);
-			if (iter == prefix.end())
-			{
-				prefix.insert(make_pair(sub, Elem(words[i].size(), 1)));
-			}
-			else
+			if (iter != prefix.end())
 			{
 				m_iter = iter->second.m.find(words[i].size());
 				if (m_iter != iter->second.m.end())
 					m_iter->second++;
 				else
 					iter->second.m.insert(ii(words[i].size(), 1));
+			}
+			else
+			{
+				prefix.insert(make_pair(sub, Elem(words[i].size(), 1)));
 			}
 
 			sub = words[i].substr(words[i].size() - j, j);
 			iter = postfix.find(sub);
-			if (iter == postfix.end())
-			{
-				postfix.insert(make_pair(sub, Elem(words[i].size(), 1)));
-			}
-			else
+			if (iter != postfix.end())
 			{
 				m_iter = iter->second.m.find(words[i].size());
 				if (m_iter != iter->second.m.end())
 					m_iter->second++;
 				else
 					iter->second.m.insert(ii(words[i].size(), 1));
+			}
+			else
+			{
+				postfix.insert(make_pair(sub, Elem(words[i].size(), 1)));
 			}
 		}
 	}
