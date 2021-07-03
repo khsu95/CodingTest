@@ -52,7 +52,7 @@ ii Tail_Delete(vector<vector<ii>>& table, ii tail)
 	return next_tail;
 }
 
-int solution(vector<vector<ii>> table, vector<ii> instruction)
+int solution(vector<vector<ii>>& table, vector<ii>& instruction)
 {
 	int dir = 0, now_time = 0, idx = 0, x = 0, y = 0;
 	ii tail(0,0);
@@ -74,7 +74,7 @@ int solution(vector<vector<ii>> table, vector<ii> instruction)
 
 int main()
 {
-	freopen("input.txt", "r", stdin);
+	//freopen("input.txt", "r", stdin);
 
 	int table_size;
 	cin >> table_size;
@@ -102,6 +102,6 @@ int main()
 			inst[i].second = 0;
 	}
 
-	table[0][0]=ii(9,2);
+	table[0][0]=ii(9,0);
 	cout << solution(table, inst);
 }
