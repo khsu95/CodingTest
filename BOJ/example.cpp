@@ -2,6 +2,6 @@
 
 int main()
 {
-	cout<<"bar"<<endl;
+	cout<<"bar&foo"<<endl;
 	return 0;
 }
