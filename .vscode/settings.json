@@ -2,6 +2,7 @@
     "files.associations": {
         "17471.C": "cpp",
         "17136.C": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "utility": "cpp"
     }
 }
