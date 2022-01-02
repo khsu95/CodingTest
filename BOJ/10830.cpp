@@ -1,5 +1,5 @@
 //https://www.acmicpc.net/problem/10830
-//
+//행렬제곱
 //2022.01.02
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
