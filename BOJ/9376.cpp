@@ -150,16 +150,25 @@ int main(int argc, char** argv)
 	//cost,zn_num
 	priority_queue<ii> prsn1;
 	priority_queue<ii> prsn2;
+	priority_queue<ii> orz;
 	vector<int> prsn_cost1(zn, 9999);
 	vector<int> prsn_cost2(zn, 9999);
+	vector<int> orz_cost(zn, 9999);
 
 	prsn_cost1 = Dijk(prsn1, mat[prsn.front().first][prsn.front().second], adj);
 	prsn.pop();
 	prsn_cost2 = Dijk(prsn2, mat[prsn.front().first][prsn.front().second], adj);
+	//cost from dest to another zn
+	orz_cost = Dijk(orz, 0, adj);
 	
 	//On-Off BruteForce
 	//Find which node is best they can join in
-
+	int ans=9999;
+	for (int i = 0; i < zn; i++)
+	{
+		int joint_cost = orz_cost[i] + prsn_cost1[i] + orz_cost[i] + prsn_cost2[i];
+		ans = (joint_cost < ans) ? joint_cost : ans;
+	}
 
 #if 1
 	for (int i = 0; i < col+2; i++)
@@ -178,6 +187,8 @@ int main(int argc, char** argv)
 	{
 		cout << prsn_cost1[i] << " ";
 	}
+	cout << endl;
+	cout << ans;
 #endif
 
 	return 0;
