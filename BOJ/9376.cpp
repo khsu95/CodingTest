@@ -163,10 +163,10 @@ int main(int argc, char** argv)
 	
 	//On-Off BruteForce
 	//Find which node is best they can join in
-	int ans=9999;
-	for (int i = 0; i < zn; i++)
+	int ans = prsn_cost1[0] + prsn_cost2[0];
+	for (int i = 1; i < zn; i++)
 	{
-		int joint_cost = orz_cost[i] + prsn_cost1[i] + orz_cost[i] + prsn_cost2[i];
+		int joint_cost = orz_cost[i] + prsn_cost1[i] + prsn_cost2[i] - 1;
 		ans = (joint_cost < ans) ? joint_cost : ans;
 	}
 
@@ -186,6 +186,16 @@ int main(int argc, char** argv)
 	for (int i = 0; i < prsn_cost1.size(); i++)
 	{
 		cout << prsn_cost1[i] << " ";
+	}
+	cout << endl;
+	for (int i = 0; i < prsn_cost2.size(); i++)
+	{
+		cout << prsn_cost2[i] << " ";
+	}
+	cout << endl;
+	for (int i = 0; i < orz_cost.size(); i++)
+	{
+		cout << orz_cost[i] << " ";
 	}
 	cout << endl;
 	cout << ans;
