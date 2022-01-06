@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -25,6 +26,29 @@ void DFS(vector<vector<char>>& mat, ii poi, char zn)
 			if (mat[nx][ny] == '$' || mat[nx][ny] == '.')
 			{
 				DFS(mat, ii(nx, ny), zn);
+			}
+		}
+	}
+}
+
+void DFS(vector<vector<char>>& mat, ii poi, queue<ii> &us)
+{
+	if (mat[poi.first][poi.second] == '!')	return;
+	mat[poi.first][poi.second] = '!';
+
+	for (int i = 0; i < 4; i++)
+	{
+		int nx = poi.first + dx[i];
+		int ny = poi.second + dy[i];
+		if ((nx >= 0) && (nx < mat.size() && (ny >= 0) && (ny < mat[0].size())))
+		{
+			if (mat[nx][ny]=='#')
+			{
+				DFS(mat, ii(nx, ny), us);
+			}
+			else if (mat[nx][ny] != '#' && mat[nx][ny] != '*' && mat[nx][ny] != '!')
+			{
+				us.push(ii(nx, ny));
 			}
 		}
 	}
@@ -114,18 +138,7 @@ int main(int argc, char** argv)
 		int y = dr.front().second;
 		dr.pop();
 
-		for (int i = 0; i < 4; i++)
-		{
-			int nx = x + dx[i];
-			int ny = y + dy[i];
-			if ((nx >= 0) && (nx < mat.size() && (ny >= 0) && (ny < mat[0].size())))
-			{
-				if (mat[nx][ny] != '#' && mat[nx][ny] != '*')
-				{
-					us.push(ii(nx, ny));
-				}
-			}
-		}
+		DFS(mat, ii(x, y), us);
 
 		int x_zn, y_zn;
 		if (!us.empty())
@@ -140,8 +153,8 @@ int main(int argc, char** argv)
 			int x_nbr = us.front().first;
 			int y_nbr = us.front().second;
 			us.pop();
-			adj[mat[x_zn][y_zn]][mat[x_nbr][y_nbr]] = 1;
-			adj[mat[x_nbr][y_nbr]][mat[x_zn][y_zn]] = 1;
+			adj[mat[x_zn][y_zn]][mat[x_nbr][y_nbr]] = abs((int)x_zn - (int)x_nbr) + abs((int)y_zn - (int)y_nbr)-1;
+			adj[mat[x_nbr][y_nbr]][mat[x_zn][y_zn]] = abs((int)x_zn - (int)x_nbr) + abs((int)y_zn - (int)y_nbr)-1;
 		}
 	}
 
@@ -177,7 +190,18 @@ int main(int argc, char** argv)
 		{
 			if (mat[i][j] == '#')	cout << '#' << " ";
 			else if (mat[i][j] == '*')	cout << '*' << " ";
+			else if (mat[i][j] == '!')	cout << '!' << " ";
 			else cout << (char)(mat[i][j]+'a') << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+
+	for (int i = 0; i < adj.size(); i++)
+	{
+		for (int j = 0; j < adj[0].size(); j++)
+		{
+			cout << adj[i][j] << " ";
 		}
 		cout << endl;
 	}
