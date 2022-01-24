@@ -51,7 +51,7 @@ class my_class
 {
 public:
 	vector<vector<char>> table;
-	queue<iii>			ice;
+	queue<ii>			ice;
 	my_set				ms;
 	ii swanA, swanB;
 	int ans = 0;
@@ -79,7 +79,7 @@ public:
 				}
 				else if(table[i][j]=='X')
 				{
-					ice.push(iii(ii(i, j), 1));
+					ice.push(ii(i,j));
 				}
 			}
 		}
@@ -103,56 +103,72 @@ public:
 	};
 	void thaw()
 	{
-		queue<iii>			beIce;
+		int cnt = 0;
+		queue<ii> temp;
+		queue<ii> unfrozen;
 		if (ms.whoParent(1) == ms.whoParent(2))
 		{
 			ans = 0;
 			return;
 		}
-
 		while (!ice.empty())
 		{
-			ii aIce = ice.front().first;
-			int cIce = ice.front().second;
-			vector<int> beSet;
-			ice.pop();
-			for (int i = 0; i < 4; i++)
+			while (!ice.empty())
 			{
-				int nx = aIce.first  + dx[i];
-				int ny = aIce.second + dy[i];
-				if ((nx >= 0) && (nx < table.size()) && (ny >= 0) && (ny < table[0].size()))
+				ii aIce = ice.front();
+				int flag = 0;
+				ice.pop();
+				for (int i = 0; i < 4; i++)
 				{
-					if (table[nx][ny] != 'X')
+					int nx = aIce.first + dx[i];
+					int ny = aIce.second + dy[i];
+					if ((nx >= 0) && (nx < table.size()) && (ny >= 0) && (ny < table[0].size()))
 					{
-						beSet.push_back(table[nx][ny]);
+						if (table[nx][ny] != 'X')
+						{
+							flag = 1;
+							unfrozen.push(aIce);
+						}
 					}
+				}
+				if (!flag)
+				{
+					temp.push(aIce);
 				}
 			}
 
-			vector<int>::iterator fIter = beSet.begin();
-			vector<int>::iterator nIter = beSet.begin();
-
-			if (fIter != beSet.end())
+			while (!unfrozen.empty())
 			{
-				beIce.push(iii(aIce, cIce));
+				ii ice = unfrozen.front(); unfrozen.pop();
+				for (int i = 0; i < 4; i++)
+				{
+					int nx = ice.first + dx[i];
+					int ny = ice.second + dy[i];
+					if ((nx >= 0) && (nx < table.size()) && (ny >= 0) && (ny < table[0].size()))
+					{
+						if (table[nx][ny] != 'X')
+						{
+							if (table[ice.first][ice.second] != 'X')
+							{
+								ms.union_set(table[ice.first][ice.second], table[nx][ny]);
+							}
+							else
+							{
+								table[ice.first][ice.second] = table[nx][ny];
+							}
+						}
+					}
+				}
 			}
-			else
+			cnt++;
+			while (!temp.empty())
 			{
-				ice.push(iii(aIce, cIce + 1));
+				ice.push(ii(temp.front()));
+				temp.pop();
 			}
-
-			while (++nIter != beSet.end())
-			{
-				ms.union_set(*fIter, *nIter);
-			}
-			if (fIter != beSet.end())
-			{
-				table[aIce.first][aIce.second] = (*fIter);
-			}
-
 			if (ms.whoParent(1) == ms.whoParent(2))
 			{
-				ans = cIce;
+				ans = cnt;
 				return;
 			}
 		}
