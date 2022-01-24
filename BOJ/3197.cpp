@@ -5,6 +5,11 @@
  *      Author: HyoSung
 	   Problem: https://www.acmicpc.net/problem/3197
  */
+
+/* 대충 풀고 다른 문제로 넘어가려 했는데 MLE
+ * 현재 큐 3개 사용중인데, 
+ * 큐의 노드에 대한 구조체 정의하여(stage 카운트 추가) 큐 2개로 축소(temp 큐 노쓸모)
+ */
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
@@ -118,7 +123,7 @@ public:
 				ii aIce = ice.front();
 				int flag = 0;
 				ice.pop();
-				for (int i = 0; i < 4; i++)
+				for (int i = 0; (i < 4)&&(!flag); i++)
 				{
 					int nx = aIce.first + dx[i];
 					int ny = aIce.second + dy[i];
