@@ -1,15 +1,16 @@
 /*
  * 3197.cpp
  *
- *  Created on: 2022. 01. 20.
+ *  Created on: 2022. 01. 27.
  *      Author: HyoSung
 	   Problem: https://www.acmicpc.net/problem/3197
  */
 
-/* 대충 풀고 다른 문제로 넘어가려 했는데 MLE
- * 현재 큐 3개 사용중인데, 
- * 큐의 노드에 대한 구조체 정의하여(stage 카운트 추가) 큐 2개로 축소(temp 큐 노쓸모)
- */
+/* 물에 닿은 얼음만 녹으므로 전체 얼음에 대해 조건 검사 하지 않도록 함.
+ * TLE,,, 하... 서럽다 서러워
+ * cin,cout의 문제는 아니고, DFS의 재귀호출에도 문제가 없을 것으로 생각됨.
+ * 따라서 집합 자료구조의 rank를 균형있게 유지하도록 바꾸는 것이 좋을 것 같음...맞겠지..?(고등학생 대회 문제라니....)
+*/
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
@@ -19,6 +20,7 @@ using namespace std;
 
 typedef pair<int, int> ii;
 typedef pair<ii, int> iii;
+
 
 int dx[4] = { 0, 0, 1, -1 };
 int dy[4] = { 1, -1, 0, 0 };
@@ -55,22 +57,60 @@ public:
 class my_class
 {
 public:
-	vector<vector<char>> table;
-	queue<ii>			ice;
+	vector<vector<int>> table;
+	queue<iii>			ice;
 	my_set				ms;
 	ii swanA, swanB;
 	int ans = 0;
-	int cnt = 3;
+	int cnt = 302;
 	my_class(int row, int col)
 	{
-		table.assign(row, vector<char>(col, 0));
+		table.assign(row, vector<int>(col, 0));
 		swanA = ii(9999, 9999);
 	};
+	void class_main()
+	{
+		while (!ice.empty())
+		{
+			ii unfrozen_ice = ice.front().first; 
+			int cost = ice.front().second; ice.pop();
+
+			for (int i = 0; i < 4; i++)
+			{
+				int nx = unfrozen_ice.first + dx[i];
+				int ny = unfrozen_ice.second + dy[i];
+				if ((nx >= 0) && (nx < table.size()) && (ny >= 0) && (ny < table[0].size()))
+				{
+					if (table[nx][ny] >= 300)
+					{
+						if (table[unfrozen_ice.first][unfrozen_ice.second] >= 300)
+						{
+							ms.union_set(table[unfrozen_ice.first][unfrozen_ice.second], table[nx][ny]);
+						}
+						else
+						{
+							table[unfrozen_ice.first][unfrozen_ice.second] = table[nx][ny];
+						}
+					}
+					else if (table[nx][ny] == 'X')
+					{
+						table[nx][ny] = 'x';
+						ice.push(iii(ii(nx, ny), cost + 1));
+					}
+				}
+			}
+			if (ms.whoParent(300) == ms.whoParent(301))
+			{
+				ans = cost;
+				while (!ice.empty())	ice.pop();
+			}
+		}
+	}
 	void clustering()
 	{
-		table[swanA.first][swanA.second] = 1;
+		table[swanA.first][swanA.second] = 300;
 		DFS(swanA);
-		table[swanB.first][swanB.second] = 2;
+		table[swanB.first][swanB.second] = 301;
 		DFS(swanB);
 
 		for (int i = 0; i < table.size(); i++)
@@ -81,10 +121,6 @@ public:
 				{
 					table[i][j] = cnt++;
 					DFS(ii(i, j));
-				}
-				else if(table[i][j]=='X')
-				{
-					ice.push(ii(i,j));
 				}
 			}
 		}
@@ -103,88 +139,22 @@ public:
 					table[nx][ny] = table[coor.first][coor.second];
 					DFS(ii(nx, ny));
 				}
+				else if (table[nx][ny] == 'X')
+				{
+					table[nx][ny] = 'x';
+					ice.push(iii(ii(nx, ny),1));
+				}
 			}
 		}
 	};
-	void thaw()
-	{
-		int cnt = 0;
-		queue<ii> temp;
-		queue<ii> unfrozen;
-		if (ms.whoParent(1) == ms.whoParent(2))
-		{
-			ans = 0;
-			return;
-		}
-		while (!ice.empty())
-		{
-			while (!ice.empty())
-			{
-				ii aIce = ice.front();
-				int flag = 0;
-				ice.pop();
-				for (int i = 0; (i < 4)&&(!flag); i++)
-				{
-					int nx = aIce.first + dx[i];
-					int ny = aIce.second + dy[i];
-					if ((nx >= 0) && (nx < table.size()) && (ny >= 0) && (ny < table[0].size()))
-					{
-						if (table[nx][ny] != 'X')
-						{
-							flag = 1;
-							unfrozen.push(aIce);
-						}
-					}
-				}
-				if (!flag)
-				{
-					temp.push(aIce);
-				}
-			}
-
-			while (!unfrozen.empty())
-			{
-				ii ice = unfrozen.front(); unfrozen.pop();
-				for (int i = 0; i < 4; i++)
-				{
-					int nx = ice.first + dx[i];
-					int ny = ice.second + dy[i];
-					if ((nx >= 0) && (nx < table.size()) && (ny >= 0) && (ny < table[0].size()))
-					{
-						if (table[nx][ny] != 'X')
-						{
-							if (table[ice.first][ice.second] != 'X')
-							{
-								ms.union_set(table[ice.first][ice.second], table[nx][ny]);
-							}
-							else
-							{
-								table[ice.first][ice.second] = table[nx][ny];
-							}
-						}
-					}
-				}
-			}
-			cnt++;
-			while (!temp.empty())
-			{
-				ice.push(ii(temp.front()));
-				temp.pop();
-			}
-			if (ms.whoParent(1) == ms.whoParent(2))
-			{
-				ans = cnt;
-				return;
-			}
-		}
-	}
 };
 
 int main()
 {
 	freopen("input.txt","r", stdin);
 
-	int row, col, ans;
+	int row, col;
+	char temp;
 	cin >> row >> col;
 
 	my_class mc(row, col);
@@ -192,8 +162,8 @@ int main()
 	{
 		for (int j = 0; j < col; j++)
 		{
-			cin >> mc.table[i][j];
-			if (mc.table[i][j] == 'L')
+			cin >> temp;
+			if (temp == 'L')
 			{
 				if (mc.swanA != ii(9999, 9999))
 				{
@@ -204,9 +174,11 @@ int main()
 					mc.swanA = ii(i, j);
 				}
 			}
+			mc.table[i][j] = temp;
 		}
 	}
 	mc.clustering();
-	mc.thaw();
+	if (mc.ms.whoParent(300) == mc.ms.whoParent(301))	mc.ans = 0;
+	else	mc.class_main();
 	cout << mc.ans;
 }
