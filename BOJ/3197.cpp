@@ -6,11 +6,6 @@
 	   Problem: https://www.acmicpc.net/problem/3197
  */
 
-/* 물에 닿은 얼음만 녹으므로 전체 얼음에 대해 조건 검사 하지 않도록 함.
- * TLE,,, 하... 서럽다 서러워
- * cin,cout의 문제는 아니고, DFS의 재귀호출에도 문제가 없을 것으로 생각됨.
- * 따라서 집합 자료구조의 rank를 균형있게 유지하도록 바꾸는 것이 좋을 것 같음...맞겠지..?(고등학생 대회 문제라니....)
-*/
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
@@ -45,7 +40,7 @@ public:
 		}
 		else
 		{
-			return whoParent(setA[child]);
+			return setA[child] = whoParent(setA[child]);
 		}
 	};
 	void union_set(int a, int b)
