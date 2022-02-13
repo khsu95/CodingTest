@@ -1,10 +1,10 @@
 /*
- * 6087.cpp
+ * 11066.cpp
  *
  *  Created on: 2022. 02. 13.
  *      Author: HyoSung
-	   Problem: https://www.acmicpc.net/problem/6087
-				USA Computing Olympiad > USACO January 2009 Contest > Silver 3
+	   Problem: https://www.acmicpc.net/problem/11066
+				ICPC Korea Daejeon Nationalwide Internet Competition 2015 F
  */
 
 #define _CRT_SECURE_NO_WARNINGS
