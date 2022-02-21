@@ -13,7 +13,6 @@
 #include <vector>
 #include <queue>
 #include <set>
-#include <map>
 #include <utility>
 
 using namespace std;
@@ -53,7 +52,7 @@ int main()
 	int row;
 	cin >> row;
 	vvi t(row, vi(row, 0));
-	for(int i=0;i<row;i++)
+	for (int i = 0; i < row; i++)
 	{
 		for (int j = 0; j < row; j++)
 		{
@@ -69,6 +68,7 @@ int main()
 	while (!q.empty())
 	{
 		state cState = q.front(); q.pop();
+		if ((cState.max - cState.min) >= ans)	continue;
 		for (int i = 0; i < 4; i++)
 		{
 			int nx = cState.l_x + dx[i];
@@ -78,16 +78,16 @@ int main()
 				int nMin = (t[nx][ny] < cState.min) ? t[nx][ny] : cState.min;
 				int nMax = (t[nx][ny] > cState.max) ? t[nx][ny] : cState.max;
 				state nState(nx, ny, nMin, nMax);
-				if (((nMax - nMin) > ans)
-					|| (s.find(nState) != s.end()))
-					continue;
 				if ((nx == (row - 1)) && (ny == (row - 1)))
 				{
 					ans = ((nMax - nMin) < ans) ? (nMax - nMin) : ans;
 					continue;
 				}
+				if ((nMax - nMin) > ans)
+					continue;
+				if (!(s.insert(nState).second))
+					continue;
 				q.push(nState);
-				s.insert(nState);
 			}
 		}
 	}
