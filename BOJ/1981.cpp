@@ -28,16 +28,29 @@ class state
 {
 public:
 	int l_x, l_y;
-	int min, max;
-	state(int x, int y, int nmin, int nmax) { l_x = x; l_y = y; min = nmin; max = nmax; };
+	int min, max, nCost;
+	state(int x, int y, int nmin, int nmax) { l_x = x; l_y = y; min = nmin; max = nmax; nCost = max - min; };
 	bool operator< (const state& a) const
 	{
-		if (l_x != a.l_x)	return l_x > a.l_x;
-		if (l_y != a.l_y)	return l_y > a.l_y;
-		if (min != a.min)	return min < a.min;
-		if (max != a.max)	return max < a.max;
+		if ((a.l_x + a.l_y) != (l_x + l_y))	return a.l_x + a.l_y > l_x + l_y;
+		if (a.l_x != l_x)	return a.l_x > l_x;
+		if (a.l_y != l_y)	return a.l_y > l_y;
+		if (a.min != min)	return a.min > min;
+		if (a.max != max)	return a.max < max;
+
 		return false;
 	};
+};
+int loop4 = 0;
+struct comp
+{
+	bool operator() (const ii& a, const ii& b) const
+	{
+		loop4++;
+		if (a.first != b.first) return a.first > b.first;
+		if (a.second != b.second) return a.second < b.second;
+		return false;
+	}
 };
 
 #if 1
@@ -60,34 +73,41 @@ int main()
 		}
 	}
 
+	vector<vector<set<ii, comp>>> vvs(row, vector<set<ii, comp>>(row));
 	int ans = MAX_INT;
-	queue<state> q;
-	set<state> s;
+	priority_queue<state> q;
 	q.push(state(0, 0, t[0][0], t[0][0]));
-	s.insert(state(0, 0, t[0][0], t[0][0]));
+	vvs[0][0].insert(ii(t[0][0], t[0][0]));
+	int loop = 0;
+	int loop1 = 0;
+	int loop2 = 0;
 	while (!q.empty())
 	{
-		state cState = q.front(); q.pop();
+		loop++;
+		state cState = q.top(); q.pop();
+		if (vvs[cState.l_x][cState.l_y].find(ii(cState.max, cState.min)) != vvs[cState.l_x][cState.l_y].end())	continue;
 		if ((cState.max - cState.min) >= ans)	continue;
 		for (int i = 0; i < 4; i++)
 		{
+			loop1++;
 			int nx = cState.l_x + dx[i];
 			int ny = cState.l_y + dy[i];
 			if ((nx >= 0) && (nx < row) && (ny >= 0) && (ny < row))
 			{
 				int nMin = (t[nx][ny] < cState.min) ? t[nx][ny] : cState.min;
 				int nMax = (t[nx][ny] > cState.max) ? t[nx][ny] : cState.max;
-				state nState(nx, ny, nMin, nMax);
+				int nCost = nMax - nMin;
 				if ((nx == (row - 1)) && (ny == (row - 1)))
 				{
-					ans = ((nMax - nMin) < ans) ? (nMax - nMin) : ans;
+					ans = (nCost < ans) ? (nCost) : ans;
 					continue;
 				}
-				if ((nMax - nMin) > ans)
+				if (nCost >= ans)
 					continue;
-				if (!(s.insert(nState).second))
+				if (!(vvs[nx][ny].insert(ii(nMin, nMax)).second))
 					continue;
-				q.push(nState);
+				q.push(state(nx, ny, nMin, nMax));
+				loop2++;
 			}
 		}
 	}
